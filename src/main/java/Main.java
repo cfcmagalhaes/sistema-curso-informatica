@@ -21,7 +21,7 @@ public class Main
         t.registrarFalta( 11 );
         t.atribuirMedia( 11, 9.1 ); // NOTA: OK / FALTA: OK
 
-        t.atribuirMedia( 12, 6.5 ); // NOTA: NOK / FALTA: OK
+        t.atribuirMedia( 15, 6.5 ); // NOTA: NOK / FALTA: OK
 
         t.registrarFalta( 13 );
         t.registrarFalta( 13 );
@@ -29,7 +29,7 @@ public class Main
         t.atribuirMedia( 13, 6.2 ); // NOTA: NOK / FALTA: NOK
 
         t.listarTodos( );
-        t.listaAprovados( );
+        t.listarAprovados( );
 
     }
 }

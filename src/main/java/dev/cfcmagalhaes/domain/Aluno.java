@@ -44,9 +44,15 @@ public class Aluno
         this.mediaFinal = 0.0;
     }
 
-    public void setMediaFinal( Double mediaFinal )
+    public boolean setMediaFinal( Double mediaFinal )
     {
-        this.mediaFinal = mediaFinal;
+        if( mediaFinal >= 0.0 && mediaFinal <= 10.0 )
+        {
+            this.mediaFinal = mediaFinal;
+            return true;
+        }
+
+        return false;
     }
 
     @Override

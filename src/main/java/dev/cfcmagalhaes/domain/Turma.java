@@ -21,15 +21,12 @@ public class Turma
 
     public void matricularAluno( Aluno aluno )
     {
-        // Testar Limite
-        if( taCheia( ) )
+        if( listaEstaCheia( ) )
             throw new LimiteExcedidoException( );
 
-        // Testar se já está na lista (codigoAluno)
-        if( this.buscarAluno( aluno ) )
+        if( buscarAluno( aluno.getCodigo( ) ) != null )
             throw new AlunoExistenteException( "Aluno com o codigo " + aluno.getCodigo( ) + " já consta na lista.");
 
-        // SetNota = 0 e setFaltas = 0
         for( int i = 0; i < this.limiteAlunos; i++ )
         {
             if( this.listaAlunos[i] == null)
@@ -42,65 +39,58 @@ public class Turma
         }
     }
 
-    public Integer buscarAluno( Integer codigo )
+    public Integer buscarIndexAluno( Integer codigo )
     {
-        if( !this.taVazia( ) )
+        if( this.listaNaoEstaVazia( ) )
         {
             for( int i = 0; i < this.limiteAlunos; i++ )
             {
-                if( this.listaAlunos[i] != null && this.listaAlunos[i].getCodigo( ) == codigo ) {
+                if( this.listaAlunos[i] != null && this.listaAlunos[i].getCodigo() == codigo )
                     return i;
-                }
             }
+
             return -1;
         }
 
         throw new ListaVaziaException( );
     }
 
-    public void registrarFalta( Integer codigo )
+    public Aluno buscarAluno( Integer codigo )
     {
-        if( !taVazia( ) )
+        for( int i = 0; i < this.limiteAlunos; i++ )
         {
-            Integer indice = buscarAluno( codigo );
-
-            if( indice != -1 )
-            {
-                this.listaAlunos[indice].adicionaFalta( );
-                return;
+            if( this.listaAlunos[i] != null && this.listaAlunos[i].getCodigo( ) == codigo ) {
+                return this.listaAlunos[i];
             }
-
-            throw new AlunoNaoEncontratoException( codigo );
         }
 
-        throw new ListaVaziaException( );
+        return null;
+    }
+
+    public void registrarFalta( Integer codigo )
+    {
+        if( listaNaoEstaVazia( ) && alunoExiste( codigo ) )
+        {
+            this.listaAlunos[buscarIndexAluno( codigo )].adicionaFalta( );
+            return;
+        }
+
+        throw new AlunoNaoEncontratoException(codigo);
     }
 
     public void atribuirMedia( Integer codigo, Double media )
     {
-        if( !taVazia( ) )
+        if( listaNaoEstaVazia( ) && alunoExiste( codigo ) )
         {
-            Integer indice = buscarAluno( codigo );
+           if( this.listaAlunos[buscarIndexAluno( codigo )].setMediaFinal( media ) )
+               System.out.println( "Média adicionada.");
+           else
+               System.out.println( "Média ignorada: valor precisa estar entre 0.0 e 10.0." );
 
-            if( indice != -1 )
-            {
-                if( media >= 0.0 && media <= 10.0 )
-                {
-                    this.listaAlunos[indice].setMediaFinal( media );
-                    return;
-                }
-                else
-                {
-                    System.out.println( "Média ignorada: valor precisa estar entre 0.0 e 10.0." );
-                    return;
-                }
-            }
-
-            throw new AlunoNaoEncontratoException( codigo );
-
+        return;
         }
 
-        throw new ListaVaziaException( );
+        throw new AlunoNaoEncontratoException( codigo );
     }
 
     public void listarTodos( )
@@ -108,7 +98,7 @@ public class Turma
         this.imprimirLista( this.listaAlunos );
     }
 
-    public void listaAprovados( )
+    public void listarAprovados( )
     {
         Aluno[] lista = new Aluno[limiteAlunos];
 
@@ -117,7 +107,7 @@ public class Turma
 
         while( this.listaAlunos[i] != null )
         {
-            if( this.listaAlunos[i].getMediaFinal( ) >= 6.0 && calculaFrequencia( this.listaAlunos[i] ) > 75 )
+            if( this.listaAlunos[i].getMediaFinal( ) >= 6.0 && calcularFrequencia( this.listaAlunos[i] ) > 75 )
             {
                 lista[j] = this.listaAlunos[i];
                 j++;
@@ -129,23 +119,15 @@ public class Turma
         this.imprimirLista( lista );
     }
 
-    private boolean buscarAluno( Aluno aluno )
+    private boolean alunoExiste( Integer codigo )
     {
-        if( !this.taVazia( ) )
-        {
-            for( int i = 0; i < this.limiteAlunos; i++ )
-            {
-                if( this.listaAlunos[i] != null && this.listaAlunos[i].getCodigo( ) == aluno.getCodigo( ) ) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        if( buscarIndexAluno( codigo ) != -1 )
+            return true;
 
         return false;
     }
 
-    private boolean taCheia( )
+    private boolean listaEstaCheia( )
     {
         if( this.listaAlunos[limiteAlunos - 1] == null )
             return false;
@@ -153,15 +135,15 @@ public class Turma
         return true;
     }
 
-    private boolean taVazia( )
+    private boolean listaNaoEstaVazia( )
     {
         if( this.listaAlunos[0] == null )
-            return true;
+            return false;
 
-        return false;
+        return true;
     }
 
-    private Integer calculaFrequencia( Aluno aluno )
+    private Integer calcularFrequencia(Aluno aluno )
     {
         Integer presenca = this.totalAulas - aluno.getQtdFaltas( );
 
@@ -177,7 +159,7 @@ public class Turma
 
         while( lista[i] != null )
         {
-            saida += lista[i].toString( ) + ", presença: " + this.calculaFrequencia( lista[i] ) + "%}\n";
+            saida += lista[i].toString( ) + ", presença: " + this.calcularFrequencia( lista[i] ) + "%}\n";
             i++;
         }
 
